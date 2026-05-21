@@ -137,8 +137,7 @@ rownames(cormatrix) <- colnames(Y)
 
 # Piirretään jäännöskovarianssimatriisi
 corrplot(cormatrix[order.single(cormatrix), order.single(cormatrix)], diag = F, type = "lower", 
-         method = "square", tl.cex = 0.5, tl.srt = 45, tl.col = "black")
-
+         method = "square", tl.cex = 0.63, tl.srt = 45, tl.col = "black")
 
 library(ggplot2)
 library(rnaturalearth)
@@ -173,32 +172,23 @@ LVgamma <- Ad %*% obj$env$parList()$u %*% obj$report()$lam
 # Koordinaatit ja latentit muuttujat kertaa lajien latausmatriisi
 dcoords2 <- data.frame(V1 = dcoords[,1], V2 = dcoords[,2], LVgamma = as.matrix(LVgamma))
 
-
-# Kaikki lajien spatiaaliset jakaumat tutkimusalueella samassa kuvassa
-lajit <- data.frame(ryhma = c(rep("Balistes capriscus", times = nrow(dcoords2)), rep("Caulolatilus microps", times = nrow(dcoords2)), rep("Centropristis striata", times = nrow(dcoords2)),rep("Cephalopholis cruentata", times = nrow(dcoords2)),
-                              rep("Epinephelus adscensionis", times = nrow(dcoords2)),rep("Epinephelus itajara", times = nrow(dcoords2)), rep("Epinephelus morio", times = nrow(dcoords2)),rep("Epinephelus niveatus", times = nrow(dcoords2)),
-                              rep("Haemulon plumierii", times = nrow(dcoords2)),rep("Lachnolaimus maximus", times = nrow(dcoords2)),rep("Lutjanus analis", times = nrow(dcoords2)),rep("Lutjanus campechanus", times = nrow(dcoords2)),rep("Lutjanus griseus", times = nrow(dcoords2)),
-                              rep("Malacanthus plumieri", times = nrow(dcoords2)),rep("Mycteroperca interstitialis", times = nrow(dcoords2)),rep("Mycteroperca microlepis", times = nrow(dcoords2)),rep("Mycteroperca phenax", times = nrow(dcoords2)),
-                              rep("Ocyurus chrysurus", times = nrow(dcoords2)),rep("Pagrus pagrus", times = nrow(dcoords2)),rep("Rhomboplites aurorubens", times = nrow(dcoords2)),rep("Seriola dumerili", times = nrow(dcoords2))) 
-                       ,LVgamma = c(dcoords2$LVgamma.1, dcoords2$LVgamma.2,dcoords2$LVgamma.3,dcoords2$LVgamma.4, dcoords2$LVgamma.5, dcoords2$LVgamma.6, dcoords2$LVgamma.7, dcoords2$LVgamma.8, dcoords2$LVgamma.9, dcoords2$LVgamma.10, dcoords2$LVgamma.11,
-                                    dcoords2$LVgamma.12,dcoords2$LVgamma.13, dcoords2$LVgamma.14, dcoords2$LVgamma.15, dcoords2$LVgamma.16, dcoords2$LVgamma.17, dcoords2$LVgamma.18, dcoords2$LVgamma.19, dcoords2$LVgamma.20, dcoords2$LVgamma.21),
-                       V1 = c(rep(dcoords2$V1, times = 21)),
-                       V2 = c(rep(dcoords2$V2, times = 21)))
-
-map +
-  geom_point(data = lajit, aes(x = V1, y = V2, colour=LVgamma), size = 1) +
-  labs(title = "Kalalajit", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM") + 
-  facet_wrap(~ryhma)
-
 # Lajien Centropristis striata, Balistes capriscus ja Mycteroperca phenax spatiaaliset jakaumat tutkimusalueella samassa kuvassa
+map1 <- ggplot(data = world) +
+  geom_sf() +
+  coord_sf(xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max), expand = FALSE) +
+  scale_x_continuous(breaks = round(seq(lon_min, lon_max, by = 6), digits = 0)) +
+  theme_minimal()
+map1
+
 osalajit <- data.frame(ryhma = c(rep("Centropristis striata", times = nrow(dcoords2)),
                               rep("Balistes capriscus", times = nrow(dcoords2)),
-                              rep("Mycteroperca phenax", times = nrow(dcoords2))) 
-                    ,LVgamma = c(dcoords2$LVgamma.3, dcoords2$LVgamma.1,dcoords2$LVgamma.17),
-                    V1 = c(rep(dcoords2$V1, times = 3)),
-                    V2 = c(rep(dcoords2$V2, times = 3)))
+                              rep("Mycteroperca phenax", times = nrow(dcoords2)),
+                              rep("Rhomboplites aurorubens", times = nrow(dcoords2))) 
+                    ,LVgamma = c(dcoords2$LVgamma.3, dcoords2$LVgamma.1,dcoords2$LVgamma.17,dcoords2$LVgamma.20),
+                    V1 = c(rep(dcoords2$V1, times = 4)),
+                    V2 = c(rep(dcoords2$V2, times = 4)))
 
-map +
+map1 +
   geom_point(data = osalajit, aes(x = V1, y = V2, colour=LVgamma), size = 1) +
   labs(x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset") + 
   facet_wrap(~ryhma)
@@ -207,87 +197,87 @@ map +
 # Yksittäiset kuvat jokaisen lajin spatiaalisesta jakaumasta tutkimusalueella
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.1), size = 2) +
-  labs(title = "Balistes capriscus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings") 
+  labs(title = "Balistes capriscus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset") 
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.2), size = 2) +
-  labs(title = "Caulolatilus microps", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Caulolatilus microps", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.3), size = 2) +
-  labs(title = "Centropristis striata", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Centropristis striata", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.4), size = 2) +
-  labs(title = "Cephalopholis cruentata", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Cephalopholis cruentata", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.5), size = 2) +
-  labs(title = "Epinephelus adscensionis", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Epinephelus adscensionis", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.6), size = 2) +
-  labs(title = "Epinephelus itajara", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Epinephelus itajara", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.7), size = 2) +
-  labs(title = "Epinephelus morio", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Epinephelus morio", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.8), size = 2) +
-  labs(title = "Epinephelus niveatus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Epinephelus niveatus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.9), size = 2) +
-  labs(title = "Haemulon plumierii", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Haemulon plumierii", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.10), size = 2) +
-  labs(title = "Lachnolaimus maximus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Lachnolaimus maximus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.11), size = 2) +
-  labs(title = "Lutjanus analis", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Lutjanus analis", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.12), size = 2) +
-  labs(title = "Lutjanus campechanus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Lutjanus campechanus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.13), size = 2) +
-  labs(title = "Lutjanus griseus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Lutjanus griseus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.14), size = 2) +
-  labs(title = "Malacanthus plumieri", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Malacanthus plumieri", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.15), size = 2) +
-  labs(title = "Mycteroperca interstitialis", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Mycteroperca interstitialis", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.16), size = 2) +
-  labs(title = "Mycteroperca microlepis", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Mycteroperca microlepis", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.17), size = 2) +
-  labs(title = "Mycteroperca phenax", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Mycteroperca phenax", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.18), size = 2) +
-  labs(title = "Ocyurus chrysurus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Ocyurus chrysurus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.19), size = 2) +
-  labs(title = "Pagrus pagrus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Pagrus pagrus", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.20), size = 2) +
-  labs(title = "Rhomboplites aurorubens", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Rhomboplites aurorubens", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 map +
   geom_point(data = dcoords2, aes(x = V1, y = V2, colour=LVgamma.21), size = 2) +
-  labs(title = "Seriola dumerili", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LV*loadings")
+  labs(title = "Seriola dumerili", x = "Pituusaste", y = "Leveysaste") + scale_colour_gradientn(colours = hcl.colors(5, palette = "inferno"), name = "LM*lataukset")
 
 
 # Piirretään kuvat molemmille latenteille muuttujille
@@ -436,7 +426,7 @@ for (i in 1:k) {
   
   segments( x0 = lower, y0 = At.y, x1 = upper, y1 = At.y, col = col.seq )
   abline(v = 0, lty = 1)
-  axis( 2, at = At.y, labels = names(Xc), las = 1, cex.axis = 0.6)
+  axis( 2, at = At.y, labels = names(Xc), las = 1, cex.axis = 0.8)
 }
 
 # Kovariaattien estimaatit ja 95%:n luottamusvälit jokaiselle lajille
@@ -465,4 +455,3 @@ for (i in 2:k) {
   abline(v = 0, lty = 1)
   axis( 2, at = At.y, labels = names(Xc), las = 1, cex.axis = 0.6)
 }
-
