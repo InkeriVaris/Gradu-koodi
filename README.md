@@ -1,0 +1,1 @@
+Tämä kansio sisältää koodit latenttimuuttujamallin sovitukseen TMB:llä (cpp- ja R-tiedosto), koodin verkon muodostamiseen INLA:lla, sekä koodin Mat\'ern-kovarianssifunktion piirtoon.
