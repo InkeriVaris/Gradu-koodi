@@ -25,7 +25,7 @@ load("fishreef_mesh.Rdata")
 # Kuva verkosta
 plot(fishreef_mesh$mesh)
 
-# Luodaan A matriisi, joka yhdistää verkon solmut ja havainnot
+# Luodaan A-matriisi, joka yhdistää verkon solmut ja havainnot
 A = inla.spde.make.A(
   fishreef_mesh,
   loc = cbind(Xreef$Start_Longitude, Xreef$Start_Latitude)
@@ -110,7 +110,6 @@ opt$par
 
 # Tarkistetaan konvergoiko optimointi prosessi gradienttien avulla
 opt$convergence
-# Gradientit pääosin lähellä nollaa, mutta muutamien parametrien osalta ei niin hyvä:
 plot(c(obj$gr(opt$par)))
 
 # Estimoidut parametrit, satunnaisvaikutusket ja matriisit
