@@ -7,6 +7,7 @@ library(INLA)
 load("fishreef_full.Rdata")
 
 # Tehdään mesh/verkko
+# Koordinaatit
 dim(dcoords)
 summary(dcoords)
 
@@ -22,7 +23,7 @@ mesh <- inla.mesh.2d(
 # Kuva verkosta
 plot(mesh)
 
-# Matern-SPDE-malli objekti
+# Matern-SPDE-objekti
 fishreef_mesh = inla.spde2.matern(mesh, alpha = 2)
 
 # Tallennetaan verkko
