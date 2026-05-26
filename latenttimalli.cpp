@@ -15,7 +15,7 @@ Type objective_function<Type>::operator() ()
   DATA_MATRIX(x);
   // SPDE-objekti, jonka avulla muodostetaan keskittyneisyysmatriisi latenteille muuttujille
   DATA_STRUCT(spde, spde_t);
-  // SPDE-verkko-projektio matriisi (N_sijainti x N_solmu) (N_sites x N_mesh)
+  // SPDE-verkko-projektio matriisi 
   DATA_SPARSE_MATRIX(projmat);
   
   // Regressiokertoimet
@@ -31,7 +31,7 @@ Type objective_function<Type>::operator() ()
   // Latenttien muuttujien kovarianssimatriisi
   PARAMETER_VECTOR(lv_cor);
   
-  // Vastemuuttujamatriisin dimensiot Extract dimension of the response matrix
+  // Vastemuuttujamatriisin dimensiot
   int n = y.rows();
   int p = y.cols();
   // Latenttien muuttujien lukumäärä
